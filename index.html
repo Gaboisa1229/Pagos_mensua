@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Corporativo - Derechos Herenciales</title>
+    
+    <!-- Hojas de estilo e Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Librerías Externas -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar no-print">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-chart-pie"></i></div>
+            <div>
+                <h1>Control de Pagos - Derechos Herenciales</h1>
+                <p class="brand-sub">Módulo Contable</p>
+            </div>
+        </div>
+        <div class="actions">
+            <button onclick="openContractModal()" class="btn btn-contract"><i class="fa-solid fa-file-signature"></i> Ver Contrato Original</button>
+            <button onclick="exportToExcel()" class="btn btn-excel"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
+            <button onclick="exportToPDF()" class="btn btn-pdf"><i class="fa-solid fa-file-pdf"></i> Imprimir PDF</button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+        
+        <!-- Grid Superior: Resumen Financiero y Gráfico -->
+        <div class="top-summary-grid">
+            
+            <!-- Tarjetas de Métricas -->
+            <div class="metrics-column">
+                <div class="card metric-card shadow-sm">
+                    <p class="metric-label">Saldo Pendiente Global</p>
+                    <h2 id="global-pending" class="metric-value text-danger">$18,000,000</h2>
+                    <p class="metric-footer">Inicial Consolidado: $18,000,000 COP</p>
+                </div>
+                
+                <div class="card metric-card shadow-sm">
+                    <p class="metric-label">Total Recaudado</p>
+                    <h2 id="global-collected" class="metric-value text-success">$0</h2>
+                    <p id="global-percentage" class="metric-footer text-success">0% del total cubierto</p>
+                </div>
+            </div>
+
+            <!-- Contenedor del Gráfico Dinámico -->
+            <div class="card chart-card shadow-sm">
+                <h3>Distribución del Estado Financiero</h3>
+                <div class="chart-wrapper">
+                    <canvas id="financialChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid de Compradores Asignados -->
+        <div class="buyers-grid">
+            
+            <!-- Comprador 1 -->
+            <div class="card buyer-card shadow-sm">
+                <div class="buyer-header">
+                    <div>
+                        <span class="tag">Titular de Cuenta</span>
+                        <h2>Diego Suárez</h2>
+                    </div>
+                    <div class="account-badge">Cuenta Activa</div>
+                </div>
+                <div class="buyer-stats">
+                    <div class="stat-item"><span>Obligación</span><strong>$9,000,000</strong></div>
+                    <div class="stat-item highlighted"><span>Saldo Pendiente</span><strong id="pending-diego" class="text-danger">$9,000,000</strong></div>
+                </div>
+                <button onclick="openPaymentModal('Diego Suárez')" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Registrar Pago</button>
+            </div>
+
+            <!-- Comprador 2 -->
+            <div class="card buyer-card shadow-sm">
+                <div class="buyer-header">
+                    <div>
+                        <span class="tag">Titular de Cuenta</span>
+                        <h2>Felipe Suárez</h2>
+                    </div>
+                    <div class="account-badge">Cuenta Activa</div>
+                </div>
+                <div class="buyer-stats">
+                    <div class="stat-item"><span>Obligación</span><strong>$9,000,000</strong></div>
+                    <div class="stat-item highlighted"><span>Saldo Pendiente</span><strong id="pending-felipe" class="text-danger">$9,000,000</strong></div>
+                </div>
+                <button onclick="openPaymentModal('Felipe Suárez')" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Registrar Pago</button>
+            </div>
+        </div>
+
+        <!-- Historial Contable / Libro de Auditoría -->
+        <div class="card ledger-card shadow-sm">
+            <div class="ledger-header">
+                <h3>Libro General de Transacciones y Abonos</h3>
+                <span id="ledger-count" class="counter-badge">0 transacciones</span>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha de Registro</th>
+                            <th>Comprador</th>
+                            <th>Valor Abonado</th>
+                            <th>Observaciones Facultativas</th>
+                            <th>Soporte</th>
+                            <th class="no-print">Gestión</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-body">
+                        <tr id="empty-row">
+                            <td colspan="6" class="table-empty">No se registran movimientos en el periodo actual.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: Ver Contrato PDF -->
+    <div id="contractModal" class="modal-overlay hidden no-print">
+        <div class="modal-box lg-modal shadow-sm">
+            <div class="modal-header">
+                <h3>Documento de Cesión de Derechos Herenciales</h3>
+                <button onclick="closeContractModal()" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="contract-viewer">
+                <iframe id="contractFrame" src="contrato.pdf" width="100%" height="100%"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeContractModal()" class="btn btn-dark">Cerrar Visor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Registrar / Editar Pago -->
+    <div id="paymentModal" class="modal-overlay hidden no-print">
+        <div class="modal-box shadow-sm">
+            <div class="modal-header">
+                <h3 id="modal-title">Registrar Abono Bancario</h3>
+                <button onclick="closePaymentModal()" class="modal-close-btn">&times;</button>
+            </div>
+            <form id="paymentForm" onsubmit="submitPayment(event)">
+                <input type="hidden" id="targetBuyer">
+                <input type="hidden" id="editIndex" value="-1">
+                
+                <div class="form-group">
+                    <label>Monto del Abono (COP)</label>
+                    <input type="number" id="payAmount" required placeholder="Ej. 2500000" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Observaciones y Concepto</label>
+                    <textarea id="payNotes" required placeholder="Banco, N° de aprobación u observaciones..." rows="3"></textarea>
+                </div>
+                <div class="form-group" id="file-group">
+                    <label>Archivo de Soporte (Imagen o PDF del Recibo)</label>
+                    <input type="file" id="payFile" accept="image/jpeg, image/jpg, image/png, application/pdf" onchange="handleFileChange(this)">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" onclick="closePaymentModal()" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-save">Guardar Transacción</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Validación de Autorización -->
+    <div id="authModal" class="modal-overlay hidden no-print">
+        <div class="modal-box sm-modal shadow-sm">
+            <div class="auth-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>Autorización Requerida</h3>
+            <p>Se requiere confirmación del administrador para reestructurar o editar valores financieros pasados.</p>
+            <input type="password" id="authPassphrase" placeholder="Ingrese clave gerencial..." class="input-password">
+            <p id="auth-error" class="auth-error-msg hidden">Clave incorrecta. Modificación bloqueada.</p>
+            <div class="modal-footer">
+                <button onclick="closeAuthModal()" class="btn btn-secondary">Cancelar</button>
+                <button onclick="verifyAuth()" class="btn btn-dark">Validar Firma</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
