@@ -1,106 +1,118 @@
-/* Paleta de Colores Corporativa y Fuentes */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; -webkit-font-smoothing: antialiased; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; -webkit-font-smoothing: antialiased; padding-bottom: 2rem; }
 
-/* Navbar */
-.navbar { background-color: #0f172a; color: #ffffff; padding: 1rem 2.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
-.brand { display: flex; align-items: center; gap: 1rem; }
-.brand-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 0.6rem; border-radius: 10px; color: white; font-size: 1.2rem; display: flex; }
-.brand h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; }
-.brand-sub { font-size: 0.75rem; color: #94a3b8; }
-.actions { display: flex; gap: 0.75rem; }
+/* Navbar adaptivo */
+.navbar { background-color: #0f172a; color: #ffffff; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; border-bottom: 1px solid #334155; }
+.brand { display: flex; align-items: center; gap: 0.75rem; width: 100%; }
+.brand-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 0.5rem; border-radius: 8px; color: white; font-size: 1.1rem; display: flex; }
+.brand h1 { font-size: 1rem; font-weight: 700; }
+.brand-sub { font-size: 0.7rem; color: #94a3b8; }
+.actions { display: flex; gap: 0.5rem; width: 100%; justify-content: space-between; }
 
-/* Botones Estilizados */
-.btn { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; }
+/* Botones universales adaptados para pulsación táctil móvil */
+.btn { flex: 1; padding: 0.75rem 0.5rem; border: none; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; transition: background 0.2s; min-height: 44px; }
 .btn-contract { background-color: #3b82f6; color: white; }
-.btn-contract:hover { background-color: #2563eb; }
 .btn-excel { background-color: #10b981; color: white; }
-.btn-excel:hover { background-color: #059669; }
 .btn-pdf { background-color: #64748b; color: white; }
-.btn-pdf:hover { background-color: #475569; }
-.btn-primary { background: linear-gradient(180deg, #1e293b, #0f172a); color: white; width: 100%; justify-content: center; padding: 0.75rem; border: 1px solid #334155; }
-.btn-primary:hover { background: #1e293b; transform: translateY(-1px); }
-.btn-secondary { background-color: #f1f5f9; color: #475569; }
-.btn-secondary:hover { background-color: #e2e8f0; }
+.btn-primary { background: #0f172a; color: white; width: 100%; font-size: 0.85rem; }
+.btn-secondary { background-color: #e2e8f0; color: #475569; }
 .btn-save { background-color: #2563eb; color: white; }
-.btn-save:hover { background-color: #1d4ed8; }
 .btn-dark { background-color: #0f172a; color: white; }
-.btn-inline-edit { background: none; color: #3b82f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.25rem; }
-.btn-inline-edit:hover { background-color: #eff6ff; color: #1d4ed8; }
+.btn-inline-edit { background-color: #eff6ff; color: #2563eb; padding: 0.5rem 0.75rem; border: 1px solid #bfdbfe; border-radius: 6px; font-weight: 600; font-size: 0.75rem; cursor: pointer; width: 100%; text-align: center; }
 
-/* Contenedor Principal */
-.workspace { max-width: 1240px; margin: 2rem auto; padding: 0 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
-.card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; }
-.shadow-sm { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
+/* Grid de área de trabajo responsivo */
+.workspace { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+.card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; }
+.shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 
-/* Grid Superior y Reporte con Gráfico */
-.top-summary-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; }
-.metrics-column { display: flex; flex-direction: column; gap: 1rem; justify-content: space-between; }
-.metric-card { display: flex; flex-direction: column; justify-content: center; height: calc(50% - 0.5rem); }
-.metric-label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-.metric-value { font-size: 2.2rem; font-weight: 800; margin: 0.4rem 0; letter-spacing: -1px; }
-.metric-footer { font-size: 0.75rem; color: #94a3b8; font-weight: 500; }
+/* Layout colapsable en móvil */
+.top-summary-grid { display: flex; flex-direction: column; gap: 1rem; }
+.metrics-column { display: flex; flex-direction: column; gap: 1rem; }
+.metric-card { display: flex; flex-direction: column; justify-content: center; }
+.metric-label { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+.metric-value { font-size: 1.75rem; font-weight: 800; margin: 0.25rem 0; letter-spacing: -0.5px; }
+.metric-footer { font-size: 0.7rem; color: #94a3b8; }
 .text-danger { color: #ef4444; }
 .text-success { color: #10b981; }
 
-.chart-card h3 { font-size: 0.9rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem; }
-.chart-wrapper { width: 100%; height: 180px; display: flex; justify-content: center; align-items: center; }
+.chart-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem; }
+.chart-wrapper { width: 100%; height: 160px; position: relative; }
 
-/* Grid de Compradores */
-.buyers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-.buyer-card { display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem; }
-.buyer-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.tag { font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; background-color: #eff6ff; padding: 0.2rem 0.5rem; border-radius: 6px; }
-.buyer-header h2 { font-size: 1.3rem; font-weight: 700; margin-top: 0.3rem; color: #0f172a; }
-.account-badge { font-size: 0.7rem; font-weight: 600; color: #10b981; background-color: #ecfdf5; padding: 0.25rem 0.6rem; border-radius: 20px; border: 1px solid #a7f3d0; }
-.buyer-stats { display: flex; flex-direction: column; gap: 0.5rem; }
-.stat-item { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.5rem 0; border-bottom: 1px dashed #e2e8f0; }
-.stat-item span { color: #64748b; }
-.stat-item strong { font-weight: 700; color: #1e293b; }
-.stat-item.highlighted { border-bottom: none; background-color: #f8fafc; padding: 0.6rem 0.75rem; border-radius: 8px; }
+.buyers-grid { display: flex; flex-direction: column; gap: 1rem; }
+.buyer-card { display: flex; flex-direction: column; gap: 1rem; }
+.buyer-header { display: flex; justify-content: space-between; align-items: center; }
+.tag { font-size: 0.6rem; background-color: #eff6ff; color: #3b82f6; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 700; }
+.buyer-header h2 { font-size: 1.1rem; font-weight: 700; color: #0f172a; }
+.account-badge { font-size: 0.65rem; color: #10b981; background-color: #ecfdf5; padding: 0.2rem 0.5rem; border-radius: 12px; font-weight: 600; }
+.buyer-stats { display: flex; flex-direction: column; gap: 0.4rem; }
+.stat-item { display: flex; justify-content: space-between; font-size: 0.8rem; }
+.stat-item.highlighted { background-color: #f8fafc; padding: 0.5rem; border-radius: 6px; font-weight: 700; }
 
-/* Secciones de Tabla */
-.ledger-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
-.ledger-header h3 { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
-.counter-badge { background-color: #f1f5f9; color: #475569; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.75rem; border-radius: 20px; }
-.table-container { overflow-x: auto; }
-.data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left; }
-.data-table th { background-color: #f8fafc; padding: 0.85rem 1rem; font-weight: 700; color: #64748b; border-bottom: 2px solid #e2e8f0; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; }
-.data-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
-.table-empty { text-align: center; color: #94a3b8; padding: 3rem !important; font-weight: 500; }
+/* Transformación Adaptativa de la Tabla en Tarjetas Móviles */
+.ledger-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+.ledger-header h3 { font-size: 0.85rem; font-weight: 700; }
+.counter-badge { background-color: #f1f5f9; padding: 0.2rem 0.5rem; font-size: 0.65rem; border-radius: 10px; font-weight: 700; }
 
-/* Botón/Enlace de Soporte */
-.support-link { background: none; border: none; color: #2563eb; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; }
-.support-link:hover { text-decoration: underline; color: #1d4ed8; }
+.table-container { width: 100%; }
+.data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+.data-table honesty, .data-table header, .data-table coupons, .data-table th { display: none; } /* Ocultar cabecera en móvil */
+.data-table tr { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; }
+.data-table td { border: none; padding: 0.25rem 0; display: flex; justify-content: space-between; font-size: 0.8rem; }
+.data-table td::before { content: attr(data-label); font-weight: 700; color: #64748b; }
+.table-empty { text-align: center; color: #94a3b8; padding: 1.5rem !important; display: block !important; }
 
-/* Ventanas Modales */
-.modal-overlay { position: fixed; inset: 0; background-color: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
-.modal-box { background: #ffffff; border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 1.2rem; }
-.sm-modal { max-width: 340px; text-align: center; gap: 1rem; }
-.lg-modal { max-width: 850px; width: 90%; height: 85vh; }
-.contract-viewer { flex: 1; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; background: #64748b; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; }
-.modal-header h3 { font-size: 1rem; font-weight: 700; color: #0f172a; }
+.support-link { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.75rem; color: #1e293b; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; }
+
+/* Modales Optimizados para pantallas táctiles */
+.modal-overlay { position: fixed; inset: 0; background-color: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 1000; }
+.modal-box { background: #ffffff; border-radius: 16px 16px 0 0; padding: 1.25rem; width: 100%; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; animation: slideUp 0.3s ease-out; }
+.sm-modal { align-self: center; border-radius: 16px; width: 90%; max-width: 320px; animation: none; }
+.lg-modal { height: 95vh; max-height: 95vh; }
+.contract-viewer { flex: 1; border-radius: 8px; overflow: hidden; background: #64748b; min-height: 250px; }
+
+.modal-header h3 { font-size: 0.95rem; font-weight: 700; }
 .modal-close-btn { background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; }
-.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-.form-group label { font-size: 0.7rem; font-weight: 700; color: #475569; text-transform: uppercase; }
-.form-group input, .form-group textarea { padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.8rem; font-family: inherit; width: 100%; outline: none; }
-.form-group input:focus, .form-group textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+.form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+.form-group label { font-size: 0.65rem; font-weight: 700; color: #475569; text-transform: uppercase; }
+.form-group input, .form-group textarea { padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-family: inherit; width: 100%; outline: none; -webkit-appearance: none; }
 .modal-footer { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem; }
-.modal-footer .btn { width: auto; min-width: 100px; justify-content: center; }
 
-/* Componentes de Seguridad */
-.auth-icon { background-color: #fef3c7; color: #d97706; font-size: 2rem; width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 auto; }
-.input-password { text-align: center; letter-spacing: 4px; font-family: monospace; font-size: 1.1rem !important; }
-.auth-error-msg { font-size: 0.7rem; color: #ef4444; font-weight: 700; }
+.auth-icon { background-color: #fef3c7; color: #d97706; font-size: 1.75rem; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+.input-password { text-align: center; font-size: 1.2rem !important; letter-spacing: 4px; }
+.auth-error-msg { font-size: 0.7rem; color: #ef4444; font-weight: 700; text-align: center; }
 .hidden { display: none !important; }
 
-/* Ajustes de Impresión */
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* --- MEDIA QUERIES PARA PANTALLAS GRANDES (PC / TABLET) --- */
+@media (min-width: 768px) {
+    .navbar { flex-direction: row; padding: 1rem 2rem; }
+    .actions { width: auto; gap: 0.75rem; }
+    .btn { flex: none; padding: 0.6rem 1.2rem; font-size: 0.8rem; }
+    .workspace { max-width: 1200px; margin: 1.5rem auto; padding: 0 1.5rem; gap: 1.5rem; }
+    .top-summary-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem; }
+    .buyers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .modal-overlay { align-items: center; padding: 1rem; }
+    .modal-box { border-radius: 12px; max-width: 440px; }
+    .lg-modal { max-width: 850px; height: 80vh; }
+    
+    /* Revertir diseño de tabla clásica para PC */
+    .data-table { display: table; border-collapse: collapse; }
+    .data-table thead { display: table-header-group; }
+    .data-table tr { display: table-row; background: none; border: none; }
+    .data-table td { display: table-cell; border-bottom: 1px solid #f1f5f9; padding: 0.85rem; }
+    .data-table td::before { content: none; }
+    .btn-inline-edit { width: auto; }
+}
+
 @media print {
     .no-print { display: none !important; }
     body { background-color: white; color: black; }
-    .workspace { max-width: 100% !important; width: 100% !important; margin: 0; padding: 0; }
-    .card { border: none; box-shadow: none; padding: 0; }
+    .workspace { width: 100% !important; margin: 0; padding: 0; }
+    .card { border: none; box-shadow: none; }
 }
