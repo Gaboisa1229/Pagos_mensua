@@ -1,24 +1,40 @@
-// Memoria del Dashboard
+// Memoria Persistente mediante LocalStorage
 let state = {
     buyers: {
         "Diego Suárez": { total: 9000000, paid: 0 },
         "Felipe Suárez": { total: 9000000, paid: 0 }
     },
     ledger: [],
-    // CORREGIDO: Hash SHA-256 exacto correspondiente a "ADMIN2026"
-    secureSecretHash: "64e48f3bf07307f751c02213b95e0b5e1e8351597dfbe12bce5cbf115591ce3f"
+    secureSecretHash: "64e48f3bf07307f751c02213b95e0b5e1e8351597dfbe12bce5cbf115591ce3f" // Clave: ADMIN2026
 };
 
 let activeFileBase64 = "";
 let chartInstance = null;
 let pendingEditIndex = -1;
 
+// Guardar datos persistentemente en el dispositivo
+function saveToLocalStorage() {
+    localStorage.setItem('herencias_dashboard_state', JSON.stringify(state));
+}
+
+// Cargar datos al iniciar la página
+function loadFromLocalStorage() {
+    const saved = localStorage.getItem('herencias_dashboard_state');
+    if (saved) {
+        try {
+            state = JSON.parse(saved);
+        } catch (e) {
+            console.error("Error al leer almacenamiento local, usando valores por defecto", e);
+        }
+    }
+}
+
 // Formateador de Divisas COP
 function formatCurrency(val) {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
 }
 
-// Inicialización e Inyección Dinámica de Datos
+// Actualización Dinámica del Dashboard e Interfaz de Usuario
 function updateDashboard() {
     const pendingDiego = state.buyers["Diego Suárez"].total - state.buyers["Diego Suárez"].paid;
     const pendingFelipe = state.buyers["Felipe Suárez"].total - state.buyers["Felipe Suárez"].paid;
@@ -30,31 +46,31 @@ function updateDashboard() {
     document.getElementById('pending-felipe').innerText = formatCurrency(pendingFelipe);
     document.getElementById('global-pending').innerText = formatCurrency(totalPending);
     document.getElementById('global-collected').innerText = formatCurrency(totalCollected);
-    document.getElementById('global-percentage').innerText = `${percentCollected}% del total recaudado`;
+    document.getElementById('global-percentage').innerText = `${percentCollected}% cubierto`;
     document.getElementById('ledger-count').innerText = `${state.ledger.length} transacciones`;
 
     const tbody = document.getElementById('ledger-body');
     if (state.ledger.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="table-empty">No se registran movimientos en el periodo actual.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="table-empty">No se registran movimientos en el sistema.</td></tr>`;
     } else {
         tbody.innerHTML = "";
         state.ledger.forEach((item, index) => {
-            const isPDF = item.image.startsWith("data:application/pdf");
+            const isPDF = item.image && item.image.startsWith("data:application/pdf");
             const icon = isPDF ? "fa-file-pdf" : "fa-file-image";
-            const label = isPDF ? " Ver PDF" : " Ver Imagen";
+            const label = isPDF ? " PDF" : " Imagen";
 
             tbody.innerHTML += `
                 <tr>
-                    <td style="color:#64748b; font-weight:500;">${item.timestamp}</td>
-                    <td style="font-weight:600; color:#0f172a;">${item.buyer}</td>
-                    <td style="font-weight:700; color:#10b981;">${formatCurrency(item.amount)}</td>
-                    <td style="color:#475569;">${item.notes}</td>
-                    <td>
+                    <td data-label="Fecha" style="color:#64748b; font-weight:500;">${item.timestamp}</td>
+                    <td data-label="Comprador" style="font-weight:600; color:#0f172a;">${item.buyer}</td>
+                    <td data-label="Valor" style="font-weight:700; color:#10b981;">${formatCurrency(item.amount)}</td>
+                    <td data-label="Notas" style="color:#475569;">${item.notes}</td>
+                    <td data-label="Soporte">
                         <button onclick="viewSupportFile(${index})" class="support-link">
                             <i class="fa-solid ${icon}"></i>${label}
                         </button>
                     </td>
-                    <td class="no-print">
+                    <td class="no-print" data-label="Acciones">
                         <button onclick="requestEdit(${index})" class="btn-inline-edit"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                     </td>
                 </tr>`;
@@ -64,9 +80,13 @@ function updateDashboard() {
     renderChart(totalCollected, totalPending);
 }
 
-// Visualizador dinámico antibloqueo
+// Visualizador de archivos de soporte sin bloqueo del navegador
 function viewSupportFile(index) {
     const base64Data = state.ledger[index].image;
+    if (!base64Data || base64Data.startsWith("http")) {
+        alert("Este registro no cuenta con un archivo adjunto válido.");
+        return;
+    }
     
     if (base64Data.startsWith("data:application/pdf")) {
         const base64String = base64Data.split(',')[1];
@@ -81,12 +101,12 @@ function viewSupportFile(index) {
         window.open(blobUrl, '_blank');
     } else {
         const newTab = window.open();
-        newTab.document.write(`<img src="${base64Data}" style="max-width:100%; height:auto; display:block; margin:20px auto; box-shadow:0 4px 10px rgba(0,0,0,0.25); border-radius:8px;">`);
+        newTab.document.write(`<img src="${base64Data}" style="max-width:100%; height:auto; display:block; margin:20px auto; box-shadow:0 4px 10px rgba(0,0,0,0.15); border-radius:8px;">`);
         newTab.document.title = "Soporte de Pago";
     }
 }
 
-// Dibujo e Integración de Chart.js
+// Integración Responsiva de Gráficos (Chart.js)
 function renderChart(collected, pending) {
     const ctx = document.getElementById('financialChart').getContext('2d');
     if (chartInstance) { chartInstance.destroy(); }
@@ -94,7 +114,7 @@ function renderChart(collected, pending) {
     chartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Recaudado (COP)', 'Pendiente por Cobrar (COP)'],
+            labels: ['Recaudado', 'Pendiente'],
             datasets: [{
                 data: [collected, pending],
                 backgroundColor: ['#10b981', '#ef4444'],
@@ -106,19 +126,18 @@ function renderChart(collected, pending) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'right', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans', size: 11 } } }
+                legend: { position: window.innerWidth > 768 ? 'right' : 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } }
             },
-            cutout: '70%'
+            cutout: '75%'
         }
     });
 }
 
-// Controladores de Registro Abierto
+// Modales y Gestión Operativa
 function openPaymentModal(buyerName) {
     document.getElementById('editIndex').value = "-1";
     document.getElementById('targetBuyer').value = buyerName;
-    document.getElementById('modal-title').innerText = `Registrar Abono · ${buyerName}`;
-    document.getElementById('file-group').style.display = "flex";
+    document.getElementById('modal-title').innerText = `Abono a: ${buyerName}`;
     document.getElementById('payFile').required = true;
     document.getElementById('paymentModal').classList.remove('hidden');
 }
@@ -129,6 +148,7 @@ function closePaymentModal() {
     activeFileBase64 = "";
 }
 
+// Convertidor Universal a Base64 (Soporta Cámara y Galería)
 function handleFileChange(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -149,7 +169,7 @@ function submitPayment(e) {
 
     const maxAllowed = state.buyers[buyer].total - currentPaidWithoutThis;
     if (amount > maxAllowed) {
-        alert(`Operación Inválida. El monto máximo disponible para abonar a este comprador es ${formatCurrency(maxAllowed)}`);
+        alert(`Monto Inválido. Lo máximo por abonar para este comprador es ${formatCurrency(maxAllowed)}`);
         return;
     }
 
@@ -169,11 +189,12 @@ function submitPayment(e) {
         if (activeFileBase64 !== "") { state.ledger[idx].image = activeFileBase64; }
     }
 
+    saveToLocalStorage(); // Guardado permanente inmediato
     updateDashboard();
     closePaymentModal();
 }
 
-// Gestión del Sistema de Modificación Segura
+// Sistema de Modificación Segura (Clave Gerencial)
 function requestEdit(index) {
     pendingEditIndex = index;
     document.getElementById('authPassphrase').value = "";
@@ -187,7 +208,6 @@ function closeAuthModal() {
 }
 
 function verifyAuth() {
-    // Convierte el texto automáticamente a mayúsculas para evitar fallos de escritura
     const input = document.getElementById('authPassphrase').value.trim().toUpperCase();
     const hashed = CryptoJS.SHA256(input).toString();
 
@@ -199,54 +219,52 @@ function verifyAuth() {
         document.getElementById('payAmount').value = record.amount;
         document.getElementById('payNotes').value = record.notes;
         
-        document.getElementById('modal-title').innerText = `Corregir Transacción · ${record.buyer}`;
-        document.getElementById('file-group').style.display = "flex";
+        document.getElementById('modal-title').innerText = `Editar Pago · ${record.buyer}`;
         document.getElementById('payFile').required = false;
-        
         document.getElementById('paymentModal').classList.remove('hidden');
     } else {
         document.getElementById('auth-error').classList.remove('hidden');
     }
 }
 
-// Funciones del modal del contrato
-function openContractModal() {
-    document.getElementById('contractModal').classList.remove('hidden');
-}
+// Modal Contrato
+function openContractModal() { document.getElementById('contractModal').classList.remove('hidden'); }
+function closeContractModal() { document.getElementById('contractModal').classList.add('hidden'); }
 
+// Cerrar cualquier modal con la tecla escape
 document.addEventListener('keydown', (e) => {
-    if (e.key === "Escape") {
-        closeContractModal();
-        closePaymentModal();
-        closeAuthModal();
-    }
+    if (e.key === "Escape") { closeContractModal(); closePaymentModal(); closeAuthModal(); }
 });
 
-function closeContractModal() {
-    document.getElementById('contractModal').classList.add('hidden');
-}
-
-// Motores de Conversión Externa
+// Exportaciones
 function exportToPDF() { window.print(); }
-
 function exportToExcel() {
     let dataset = [
-        ["INFORME GERENCIAL - CONTROL DE RECAUDOS"],
-        ["Fecha de Emisión", new Date().toLocaleDateString()],
+        ["INFORME CONTROL DE RECAUDOS - DERECHOS HERENCIALES"],
+        ["Fecha de Reporte", new Date().toLocaleDateString()],
         [],
-        ["ESTADO GLOBAL DE CUENTAS"],
-        ["Comprador Asignado", "Compromiso Inicial", "Total Recaudado", "Saldo Neto Pendiente"],
+        ["ESTADO DE CUENTAS GLOBAL"],
+        ["Comprador", "Obligación Total", "Recaudado", "Saldo Pendiente"],
         ["Diego Suárez", 9000000, state.buyers["Diego Suárez"].paid, 9000000 - state.buyers["Diego Suárez"].paid],
         ["Felipe Suárez", 9000000, state.buyers["Felipe Suárez"].paid, 9000000 - state.buyers["Felipe Suárez"].paid],
         ["TOTAL CONSOLIDADO", 18000000, state.buyers["Diego Suárez"].paid + state.buyers["Felipe Suárez"].paid, 18000000 - (state.buyers["Diego Suárez"].paid + state.buyers["Felipe Suárez"].paid)],
         [],
-        ["DETALLE CRONOLÓGICO DE INGRESOS AUDITADOS"],
-        ["Fecha/Hora de Registro", "Comprador", "Monto del Abono", "Observaciones del Operador"]
+        ["DETALLE TRANSACCIONAL HISTÓRICO"],
+        ["Fecha de Registro", "Comprador", "Monto", "Concepto/Notas"]
     ];
     state.ledger.forEach(i => dataset.push([i.timestamp, i.buyer, i.amount, i.notes]));
     const wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(dataset);
-    XLSX.utils.book_append_sheet(wb, ws, "Libro de Recaudos");
-    XLSX.writeFile(wb, "Reporte_Cuentas_Herenciales.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Libro General");
+    XLSX.writeFile(wb, "Reporte_Contable_Herencias.xlsx");
 }
 
+// Redibujar gráfico si cambia el tamaño de pantalla (orientación de celular)
+window.addEventListener('resize', () => {
+    const totalPending = (state.buyers["Diego Suárez"].total - state.buyers["Diego Suárez"].paid) + (state.buyers["Felipe Suárez"].total - state.buyers["Felipe Suárez"].paid);
+    const totalCollected = state.buyers["Diego Suárez"].paid + state.buyers["Felipe Suárez"].paid;
+    renderChart(totalCollected, totalPending);
+});
+
+// Inicialización del sistema
+loadFromLocalStorage();
 updateDashboard();
